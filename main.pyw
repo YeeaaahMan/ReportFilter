@@ -4,17 +4,22 @@ __author__ = 'Sergei'
 import wx
 import wx.xrc
 
-def filter(fileName="report.csv"):
+def removeQuotes(line):
+    while line.find('"') != -1:
+        line = line.replace('"', '')
+    return line
+
+def filter(fileName="report.csv", departmentsList=["Технические"], exclusionsList = ["Need info", "On hold"]):
     fh = open(fileName,'r')
     report = list()
 
     for line in fh:
-        #print line
-        if "Технические" in line and "Need info" not in line and "On hold" not in line:
-            while line.find('"') != -1:
-                line = line.replace('"', '')
-            report.append(line.strip())
+        for dep in departmentsList:
+            if dep.lower() in line.lower():
+                if removeQuotes( line.split(',')[1] ) not in exclusionsList:
+                    report.append( removeQuotes( line.strip() ) )
     fh.close()
+    report.sort()
 
     count = 0
     totalCount = 0
@@ -44,7 +49,6 @@ def filter(fileName="report.csv"):
     result = result + "\tAbsolute count:\t" + str(totalCount) + "\t" + '\n'
 
     return result
-
 class MyFrame1 ( wx.Frame ):
 
     def __init__( self, parent ):
