@@ -9,17 +9,18 @@ def removeQuotes(line):
         line = line.replace('"', '')
     return line
 
-def filter(fileName="report.csv", departmentsList=["Технические"], exclusionsList = ["Need info", "On hold"]):
+def filter(fileName="report.csv", departmentsList=["Технические"], statusesList = ["In Queue", "Info Given", "Reopened"]):
     fh = open(fileName,'r')
     report = list()
 
     for line in fh:
+        line = removeQuotes(line)
         for dep in departmentsList:
             if dep.lower() in line.lower():
-                if removeQuotes( line.split(',')[1] ) not in exclusionsList:
-                    report.append( removeQuotes( line.strip() ) )
+                if line.split(',')[1] in statusesList:
+                    report.append(line.strip())
     fh.close()
-    report.sort()
+    #report.sort()
 
     count = 0
     totalCount = 0
@@ -49,6 +50,7 @@ def filter(fileName="report.csv", departmentsList=["Технические"], ex
     result = result + "\tAbsolute count:\t" + str(totalCount) + "\t" + '\n'
 
     return result
+
 class MyFrame1 ( wx.Frame ):
 
     def __init__( self, parent ):
@@ -101,9 +103,6 @@ class myApp(wx.App):
         self.frame.Show()
         self.SetTopWindow(self.frame)
         return True
-
-    def OnExit(self):
-        print "OnExit"
 
 if __name__ == '__main__':
     # (1) Text redirection starts here
